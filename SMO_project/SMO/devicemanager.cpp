@@ -45,8 +45,6 @@ void DeviceManager::setApplicationPtr(Device *device, Application *appPtr)
     device->popApplicationPtr();
   }
   device->setApplicationPtr(appPtr);
-  //std::cout<<"\nApplication <" << appPtr->getSrcNum() << "." << appPtr->getIndex() << "> entered device\n";
-  //printDeviceState();
 }
 void DeviceManager::releaseAllApplications()
 {
