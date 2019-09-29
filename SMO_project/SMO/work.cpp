@@ -55,14 +55,8 @@ void startSmo(const int &srcNum, const int &bufSize, const int &devNum, const in
   Buffer buffer(bufSize);
   stats.updateRecord(applications);
   std::cout << "Applications generated" << std::endl;
-  //for(auto a : applications)
-  //{
-  //  std::cout << "Application <" << a.getSrcNum() << "." << a.getIndex() << "> with Gen time <" << a.getGenTime() << ">\n";
-  //}a
   std::cout << "Buffer initialized" << std::endl;
-  //buffer.printBufferState();
   std::cout << "Devices initialized" << std::endl;
-  //devices.printDeviceState();
   std::vector<Application>::iterator appIterator = applications.begin();
   while(!stats.isEnd(appNum))
   {

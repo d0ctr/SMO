@@ -15,12 +15,9 @@ bool Buffer::tryToAddApplicationPtr(Application *appPtr)
     if(bc.isEmpty())
     {
       bc.setApplication(appPtr);
-      //std::cout<<"\nApplication <" << appPtr->getSrcNum() << "." << appPtr->getIndex() << "> tries to enter buffer\n";
-      //printBufferState();
       return true;
     }
   }
-  //std::cout<<"\nApplication <" << appPtr->getSrcNum() << "." << appPtr->getIndex() << "> got rejected\n";
   appPtr->setState(REJECTED);
   return false;
 }
@@ -49,8 +46,6 @@ void Buffer::refactorBuffer()
       it1->setApplication(appPtrToMove);
     }
   }
-  //std::cout << "\nBuffer being refactored\n";
-  //printBufferState();
 }
 Application *Buffer::getExpectedApplicationPtr()
 {
@@ -94,8 +89,6 @@ void Buffer::popThisApplicationPtr(const Application *appPtr)
       break;
     }
   }
-  //std::cout<<"\nApplication <" << appPtr->getSrcNum() << "." << appPtr->getIndex() << "> released from buffer\n";
-  //printBufferState();
   refactorBuffer();
 }
 void Buffer::printBufferState()

@@ -30,8 +30,6 @@ Application *Device::popApplicationPtr()
   appPtr = nullptr;
   empty = true;
   appPtrToReturn->setState(PROCESSED);
-  //std::cout << "\n\t!!!Application <" << appPtrToReturn->getSrcNum() << "." << appPtrToReturn->getIndex()
-  //          << "> escaped with Life time <" << appPtrToReturn->getLifeTime() << ">\n";
   return appPtrToReturn;
 }
 double Device::getProcessingTime()
