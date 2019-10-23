@@ -2,25 +2,31 @@
 #define STATISTICSRECORDER_H
 #include <vector>
 #include <list>
+#include <iostream>
 #include <QTableWidget>
 #include <QTextEdit>
 #include <QString>
-#include <iostream>
+#include <QApplication>
+#include <QProgressDialog>
 #include "application.h"
 
 class StatisticsManager
 {
 public:
-  StatisticsManager() = default;
+  StatisticsManager(QTableWidget *tableOutput, int appCount, QProgressDialog *progressDialog);
   void updateRecord(std::vector<Application> appVector);
-  void buildTableOutput(QTableWidget *tableOutput, QTextEdit *log);
-  int getProcessedNum(std::vector<Application> &appVector);
-  int getRejectedNum(std::vector<Application> &appVector);
-  bool isEnd(const int &appNum);
-  int getIterationsNum();
-  int getApplicationsNum();
+  int getProcessedCount();
+  int getRejectedCount();
+  bool isEnd(const int &appCount);
+  int getIterationsCount();
+  int getApplicationsCount();
 private:
-  std::list<std::vector<Application>> iterationsRecords;
+  int iterationsCount;
+  int processedCount;
+  int rejectedCount;
+  int appCount;
+  QTableWidget *tableOutputPtr;
+  QProgressDialog *progressDialog;
 };
 
 #endif // STATISTICSRECORDER_H

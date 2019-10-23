@@ -1,7 +1,9 @@
 #include <iostream>
 #include <exception>
+#include <QProgressDialog>
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "work.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -9,6 +11,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     ui->buttonResults->setEnabled(false);
+
 }
 
 MainWindow::~MainWindow()
@@ -31,8 +34,14 @@ void MainWindow::on_buttonStart_clicked()
     int devNum = devNumstr.toInt();
     int appNum = appNumstr.toInt();
     int l = lstr.toInt();
-    smoStats = StatisticsManager();
-    startSmo(srcNum, bufSize, devNum, l, appNum, smoStats);
+    QProgressDialog *progressDialog = new QProgressDialog("Simulation in progress...", "&Cancel", 0, appNum);
+    StatisticsManager smoStats = StatisticsManager(ui->tableOutput, appNum, progressDialog);
+    ui->tableOutput->setEnabled(0);
+    progressDialog->setMinimumDuration(0);
+    progressDialog->setWindowTitle("Please wait");
+    startSmo(srcNum, bufSize, devNum, l, appNum, smoStats, progressDialog);
+    progressDialog->setValue(appNum);
+    ui->tableOutput->setEnabled(1);
     ui->buttonResults->setEnabled(true);
   }
   catch (std::exception &e)
@@ -44,5 +53,11 @@ void MainWindow::on_buttonStart_clicked()
 
 void MainWindow::on_buttonResults_clicked()
 {
-    smoStats.buildTableOutput(ui->tableOutput, ui->textEdit);
+    ui->tableOutput->clear();
+}
+
+
+void MainWindow::on_pushButton_clicked()
+{
+    ui->tableOutput->setColumnCount(ui->tableOutput->columnCount() + 1);
 }
