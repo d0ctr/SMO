@@ -1,10 +1,11 @@
 /* TODO:
- * [П]Summing tProcessing with tLifeTime with Applications in buffer
- * [И]Comparing tLifeTime with tProcessing
- * [З]Add index of Application
- * [Д]Record states of all applications
- * [Е]Refactor main cycle
- * [ ]Refactor output table formation
+ * [X]Summing tProcessing with tLifeTime with Applications in buffer
+ * [X]Comparing tLifeTime with tProcessing
+ * [X]Add index of Application
+ * [X]Record states of all applications
+ * [X]Refactor main cycle
+ * [X]Refactor output table formation
+ * [ ]Optimize for more than 100 applications
  */
 
 #include <iostream>
@@ -48,7 +49,7 @@ std::vector<Application> generateApplicationsVector(const int &srcNum, const int
   return newAppVector;
 }
 
-void startSmo(const int &srcNum, const int &bufSize, const int &devNum, const int &l, const int &appNum, StatisticsManager &stats)
+void startSmo(const int &srcNum, const int &bufSize, const int &devNum, const int &l, const int &appNum, StatisticsManager &stats, QProgressDialog *progressDialog)
 {
   std::vector<Application> applications = generateApplicationsVector(srcNum, appNum, l);
   DeviceManager devices(devNum, 1, 0);
@@ -60,6 +61,10 @@ void startSmo(const int &srcNum, const int &bufSize, const int &devNum, const in
   std::vector<Application>::iterator appIterator = applications.begin();
   while(!stats.isEnd(appNum))
   {
+    if(progressDialog->wasCanceled())
+    {
+      break;
+    }
     if(appIterator != applications.end())
     {
       buffer.tryToAddApplicationPtr(&*appIterator);
@@ -87,6 +92,5 @@ void startSmo(const int &srcNum, const int &bufSize, const int &devNum, const in
     }
 
   }
-  stats.updateRecord(applications);
   std::cout << "------------------\nSimulation ended" << std::endl;
 }
