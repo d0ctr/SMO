@@ -7,6 +7,8 @@ Device::Device(const int &index, const int &a, const int &b)
   this->b = b;
   empty = true;
   tProcessing = 0.;
+  appCount = 0;
+  timeCount = 0.;
 }
 void Device::setApplicationPtr(Application *appPtr)
 {
@@ -15,6 +17,8 @@ void Device::setApplicationPtr(Application *appPtr)
   appPtr->setProcessingTime(tProcessing);
   appPtr->setState(INDEV);
   empty = false;
+  appCount++;
+  timeCount += getProcessingTime();
 }
 bool Device::isEmpty()
 {
@@ -29,6 +33,7 @@ Application *Device::popApplicationPtr()
   Application *appPtrToReturn = appPtr;
   appPtr = nullptr;
   empty = true;
+  tProcessing = 0;
   appPtrToReturn->setState(PROCESSED);
   return appPtrToReturn;
 }
@@ -43,4 +48,12 @@ int Device::getIndex() const
 Application *Device::getApplicationPtr()
 {
   return appPtr;
+}
+int Device::getAppCount()
+{
+  return appCount;
+}
+double Device::getTimeCount()
+{
+  return timeCount;
 }

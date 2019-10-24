@@ -12,6 +12,7 @@ public:
   DeviceManager(const int &devNum, const int &a, const int &b);
   bool isEmpty();
   Device *getDevice();
+  std::list<Device> *getDeviceList();
   void releaseAllApplications();
   void setApplicationPtr(Device *device, Application *appPtr);
   void printDeviceState();

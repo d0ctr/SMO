@@ -35,14 +35,15 @@ void MainWindow::on_buttonStart_clicked()
     int appNum = appNumstr.toInt();
     int l = lstr.toInt();
     QProgressDialog *progressDialog = new QProgressDialog("Simulation in progress...", "&Cancel", 0, appNum);
-    StatisticsManager smoStats = StatisticsManager(ui->tableOutput, appNum, progressDialog);
-    ui->tableOutput->setEnabled(0);
+    StatisticsManager smoStats = StatisticsManager(ui->bufferTable, ui->deviceTable, ui->rejectedTable, ui->processedTable,
+                                                   appNum, devNum, bufSize, progressDialog);
+    QWidget::setEnabled(0);
+    progressDialog->resize(progressDialog->size() + QSize(50, 0));
     progressDialog->setMinimumDuration(0);
     progressDialog->setWindowTitle("Please wait");
     startSmo(srcNum, bufSize, devNum, l, appNum, smoStats, progressDialog);
     progressDialog->setValue(appNum);
-    ui->tableOutput->setEnabled(1);
-    ui->buttonResults->setEnabled(true);
+    QWidget::setEnabled(1);
   }
   catch (std::exception &e)
   {
@@ -53,11 +54,5 @@ void MainWindow::on_buttonStart_clicked()
 
 void MainWindow::on_buttonResults_clicked()
 {
-    ui->tableOutput->clear();
-}
 
-
-void MainWindow::on_pushButton_clicked()
-{
-    ui->tableOutput->setColumnCount(ui->tableOutput->columnCount() + 1);
 }

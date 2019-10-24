@@ -12,6 +12,7 @@
 #include <cmath>
 #include <algorithm>
 #include <iomanip>
+#include <QLabel>
 #include "work.h"
 
 std::vector<Application> generateApplicationsVector(const int &srcNum, const int &appNum, const int &l)
@@ -54,7 +55,7 @@ void startSmo(const int &srcNum, const int &bufSize, const int &devNum, const in
   std::vector<Application> applications = generateApplicationsVector(srcNum, appNum, l);
   DeviceManager devices(devNum, 1, 0);
   Buffer buffer(bufSize);
-  stats.updateRecord(applications);
+  stats.updateRecord(applications, buffer, devices);
   std::cout << "Applications generated" << std::endl;
   std::cout << "Buffer initialized" << std::endl;
   std::cout << "Devices initialized" << std::endl;
@@ -65,32 +66,42 @@ void startSmo(const int &srcNum, const int &bufSize, const int &devNum, const in
     {
       break;
     }
+    progressDialog->setLabelText("Simulation in progress...\nApplications left: " + QString::number(appNum - stats.getRejectedCount() - stats.getProcessedCount()));
     if(appIterator != applications.end())
     {
       buffer.tryToAddApplicationPtr(&*appIterator);
       appIterator++;
-      stats.updateRecord(applications);
+      stats.updateRecord(applications, buffer, devices);
     }
     if(!buffer.isEmpty())
     {
       Device *expectedDevice = devices.getDevice();
       Application *expectedApplicationPtr = buffer.getExpectedApplicationPtr();
-      if(expectedDevice->isEmpty() || expectedApplicationPtr->getLifeTime() >= expectedDevice->getProcessingTime())
+      if(expectedDevice->isEmpty() || expectedApplicationPtr->getLifeTime() >= expectedDevice->getApplicationPtr()->getLifeTime())
       {
         buffer.popThisApplicationPtr(expectedApplicationPtr);
         devices.setApplicationPtr(expectedDevice, expectedApplicationPtr);
-        stats.updateRecord(applications);
+        stats.updateRecord(applications, buffer, devices);
       }
-      double tLifeToAdd = devices.getDevice()->getProcessingTime();
-      buffer.updateLifeTime(tLifeToAdd);
-      stats.updateRecord(applications);
+      if(!buffer.isEmpty())
+      {
+        double tLifeToAdd = 0;
+        expectedApplicationPtr = buffer.getExpectedApplicationPtr();
+        if(expectedApplicationPtr->getLifeTime() < expectedDevice->getApplicationPtr()->getLifeTime())
+        {
+          tLifeToAdd = expectedDevice->getApplicationPtr()->getLifeTime() - expectedApplicationPtr->getLifeTime();
+        }
+        buffer.updateLifeTime(tLifeToAdd);
+      }
+      expectedDevice->~Device();
+      expectedApplicationPtr->~Application();
     }
     else
     {
       devices.releaseAllApplications();
-      stats.updateRecord(applications);
+      stats.updateRecord(applications, buffer, devices);
     }
-
   }
+  stats.printStats(buffer, devices);
   std::cout << "------------------\nSimulation ended" << std::endl;
 }

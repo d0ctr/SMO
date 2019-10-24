@@ -27,13 +27,13 @@ Device *DeviceManager::getDevice()
   Device *devWithMinProcessingTime = &devList.front();
   for(auto &&d : devList)
   {
-    if(d.getProcessingTime() < devWithMinProcessingTime->getProcessingTime())
-    {
-      devWithMinProcessingTime = &d;
-    }
-    else if(d.isEmpty())
+    if(d.isEmpty())
     {
       return &d;
+    }
+    else if(d.getApplicationPtr()->getLifeTime() < devWithMinProcessingTime->getApplicationPtr()->getLifeTime())
+    {
+      devWithMinProcessingTime = &d;
     }
   }
   return devWithMinProcessingTime;
@@ -70,4 +70,8 @@ void DeviceManager::printDeviceState()
       std::cout << "Device <" << d.getIndex() << "> is empty\n";
     }
   }
+}
+std::list<Device> *DeviceManager::getDeviceList()
+{
+  return &devList;
 }
