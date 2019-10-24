@@ -10,6 +10,7 @@ public:
   Buffer() = default;
   ~Buffer() = default;
   Buffer(const int &bufSize);
+  std::list<BufferCell> *getBufferList();
   bool tryToAddApplicationPtr(Application *appPtr);
   bool isEmpty();
   void refactorBuffer();

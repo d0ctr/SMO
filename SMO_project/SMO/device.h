@@ -18,9 +18,13 @@ public:
   double getProcessingTime();
   int getIndex() const;
   Application *getApplicationPtr();
+  int getAppCount();
+  double getTimeCount();
 private:
   int index;
   double tProcessing;
+  int appCount;
+  double timeCount;
   Application *appPtr;
   bool empty;
   int a, b;

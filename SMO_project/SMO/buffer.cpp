@@ -83,7 +83,7 @@ void Buffer::popThisApplicationPtr(const Application *appPtr)
   sourcePackage = appPtr->getSrcNum();
   for(auto &&bc : bufferList)
   {
-    if(bc.getApplicationPtr()->getGenTime() == appPtr->getGenTime())
+    if(bc.getApplicationPtr() == appPtr)
     {
       bc.popApplicationPtr();
       break;
@@ -115,4 +115,8 @@ void Buffer::updateLifeTime(double &tLifeToAdd)
       bc.updateApplicationLifeTime(tLifeToAdd);
     }
   }
+}
+std::list<BufferCell> *Buffer::getBufferList()
+{
+  return &bufferList;
 }
