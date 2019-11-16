@@ -22,29 +22,36 @@ bool DeviceManager::isEmpty()
   return true;
 }
 
-Device *DeviceManager::getDevice()
+Device *DeviceManager::getExpectedDevice(Application *appPtr)
 {
   Device *devWithMinProcessingTime = &devList.front();
-  for(auto &&d : devList)
+  for(auto &d : devList)
+  {
+    if(d.getProcessingTime() < devWithMinProcessingTime->getProcessingTime())
+    {
+      devWithMinProcessingTime = &d;
+    }
+  }
+  if(devWithMinProcessingTime->getProcessingTime() <= appPtr->getGenTime())
+  {
+    return devWithMinProcessingTime;
+  }
+  for(auto &d : devList)
   {
     if(d.isEmpty())
     {
       return &d;
     }
-    else if(d.getApplicationPtr()->getLifeTime() < devWithMinProcessingTime->getApplicationPtr()->getLifeTime())
-    {
-      devWithMinProcessingTime = &d;
-    }
   }
-  return devWithMinProcessingTime;
+  return nullptr;
 }
-void DeviceManager::setApplicationPtr(Device *device, Application *appPtr)
+void DeviceManager::setApplicationPtr(Device *devicePtr, Application *appPtr)
 {
-  if(!device->isEmpty())
+  if(!devicePtr->isEmpty())
   {
-    device->popApplicationPtr();
+    devicePtr->popApplicationPtr();
   }
-  device->setApplicationPtr(appPtr);
+  devicePtr->setApplicationPtr(appPtr);
 }
 void DeviceManager::releaseAllApplications()
 {

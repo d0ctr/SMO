@@ -11,10 +11,10 @@ public:
   ~DeviceManager() = default;
   DeviceManager(const int &devNum, const int &a, const int &b);
   bool isEmpty();
-  Device *getDevice();
+  Device *getExpectedDevice(Application *appPtr);
   std::list<Device> *getDeviceList();
   void releaseAllApplications();
-  void setApplicationPtr(Device *device, Application *appPtr);
+  void setApplicationPtr(Device *devicePtr, Application *appPtr);
   void printDeviceState();
 private:
   std::list<Device> devList;

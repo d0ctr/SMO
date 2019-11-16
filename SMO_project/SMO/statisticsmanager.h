@@ -15,15 +15,15 @@
 class StatisticsManager
 {
 public:
-  StatisticsManager(QTableWidget *bufferTable, QTableWidget *deviceTable, QTableWidget *rejectedTable, QTableWidget *processedTable,
-                    int appCount, int devNum, int bufSize, QProgressDialog *progressDialog);
-  void updateRecord(std::vector<Application> appVector, Buffer &buffer, DeviceManager &devices);
+  StatisticsManager(int appCount, int devNum, int bufSize, int srcCount, QProgressDialog *progressDialog);
+  void updateRecord(std::vector<Application> appVector);
   int getProcessedCount();
   int getRejectedCount();
   bool isEnd(const int &appCount);
   int getIterationsCount();
   int getApplicationsCount();
-  void printStats(Buffer &buffer, DeviceManager &devices);
+  void printStaticTables(QTableWidget *tableDevices, QTableWidget *tableSources);
+  void pushDevices(DeviceManager devices);
 private:
   std::list<std::vector<Application>> iterationsRecord;
   int iterationsCount;
@@ -32,11 +32,9 @@ private:
   int appCount;
   int devNum;
   int bufSize;
-  QTableWidget *bufferTable;
-  QTableWidget *deviceTable;
-  QTableWidget *rejectedTable;
-  QTableWidget *processedTable;
+  int srcCount;
   QProgressDialog *progressDialog;
+  DeviceManager devices;
 };
 
 #endif // STATISTICSRECORDER_H

@@ -13,6 +13,7 @@ Device::Device(const int &index, const int &a, const int &b)
 void Device::setApplicationPtr(Application *appPtr)
 {
   this->appPtr = appPtr;
+  appPtr->setAwaittingTime(tProcessing);
   genProcessingTime();
   appPtr->setProcessingTime(tProcessing);
   appPtr->setState(INDEV);

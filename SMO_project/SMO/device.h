@@ -4,6 +4,7 @@
 #include <iomanip>
 #include <iostream>
 #include "application.h"
+#include "buffer.h"
 
 class Device
 {

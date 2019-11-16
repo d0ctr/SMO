@@ -10,7 +10,6 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    ui->buttonResults->setEnabled(false);
 
 }
 
@@ -22,28 +21,32 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_buttonStart_clicked()
 {
-  ui->buttonResults->setEnabled(false);
-  QString srcNumstr = ui->lineNumOfSources->text();
-  QString bufSizestr = ui->lineBufSize->text();
-  QString devNumstr = ui->lineNumOfDevices->text();
-  QString appNumstr = ui->lineNumOfApps->text();
-  QString lstr = ui->lineLyambda->text();
+  QString srcNumStr = ui->lineNumOfSources->text();
+  QString bufSizeStr = ui->lineBufSize->text();
+  QString devNumStr = ui->lineNumOfDevices->text();
+  QString appNumStr = ui->lineNumOfApps->text();
+  QString lStr = ui->lineLyambda->text();
+  QString aStr = ui->lineA->text();
+  QString bStr = ui->lineB->text();
   try {
-    int srcNum = srcNumstr.toInt();
-    int bufSize = bufSizestr.toInt();
-    int devNum = devNumstr.toInt();
-    int appNum = appNumstr.toInt();
-    int l = lstr.toInt();
+    int srcNum = srcNumStr.toInt();
+    int bufSize = bufSizeStr.toInt();
+    int devNum = devNumStr.toInt();
+    int appNum = appNumStr.toInt();
+    double l = lStr.toDouble();
+    int a = aStr.toInt();
+    int b = bStr.toInt();
     QProgressDialog *progressDialog = new QProgressDialog("Simulation in progress...", "&Cancel", 0, appNum);
-    StatisticsManager smoStats = StatisticsManager(ui->bufferTable, ui->deviceTable, ui->rejectedTable, ui->processedTable,
-                                                   appNum, devNum, bufSize, progressDialog);
+    StatisticsManager smoStats = StatisticsManager(appNum, devNum, bufSize, srcNum, progressDialog);
     QWidget::setEnabled(0);
     progressDialog->resize(progressDialog->size() + QSize(50, 0));
     progressDialog->setMinimumDuration(0);
     progressDialog->setWindowTitle("Please wait");
-    startSmo(srcNum, bufSize, devNum, l, appNum, smoStats, progressDialog);
+    startSmo(srcNum, bufSize, devNum, l, a, b, appNum, smoStats, progressDialog);
     progressDialog->setValue(appNum);
     QWidget::setEnabled(1);
+  //here: call StatissticsManager.printStstaicTabels to print stats to tableSourcesStats and tableDevicesStats
+    smoStats.printStaticTables(ui->tableDevicesStats, ui->tableSourcesStats);
   }
   catch (std::exception &e)
   {
@@ -52,7 +55,4 @@ void MainWindow::on_buttonStart_clicked()
 
 }
 
-void MainWindow::on_buttonResults_clicked()
-{
 
-}

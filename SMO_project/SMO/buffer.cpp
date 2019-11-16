@@ -57,8 +57,7 @@ Application *Buffer::getExpectedApplicationPtr()
       {
         if(bc.getApplicationPtr()->getSrcNum() == sourcePackage)
         {
-          Application *appPtrToReturn = bc.getApplicationPtr();
-          return appPtrToReturn;
+          return bc.getApplicationPtr();
         }
       }
     }
@@ -75,8 +74,7 @@ Application *Buffer::getExpectedApplicationPtr()
      }
    }
   }
-  Application *appPtrToReturn = minBC->getApplicationPtr();
-  return appPtrToReturn;
+  return minBC->getApplicationPtr();
 }
 void Buffer::popThisApplicationPtr(const Application *appPtr)
 {
@@ -103,16 +101,6 @@ void Buffer::printBufferState()
     else
     {
       std::cout << "BufferCell <" << bc.getIndex() << "> is empty\n";
-    }
-  }
-}
-void Buffer::updateLifeTime(double &tLifeToAdd)
-{
-  for(auto &&bc : bufferList)
-  {
-    if(!bc.isEmpty())
-    {
-      bc.updateApplicationLifeTime(tLifeToAdd);
     }
   }
 }

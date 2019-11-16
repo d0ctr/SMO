@@ -14,10 +14,10 @@ public:
   bool tryToAddApplicationPtr(Application *appPtr);
   bool isEmpty();
   void refactorBuffer();
+  BufferCell *getExpectedApplicationBufferCellPtr();
   Application *getExpectedApplicationPtr();
   void popThisApplicationPtr(const Application *appPtr);
   void printBufferState();
-  void updateLifeTime(double &tLifeToAdd);
 private:
   std::list<BufferCell> bufferList;
   int sourcePackage;
