@@ -45,6 +45,7 @@ void MainWindow::on_buttonStart_clicked()
     progressDialog->setValue(appNum);
     smoStats.printStaticTables(ui->tableDevicesStats, ui->tableSourcesStats);
     QWidget::setEnabled(1);
+    ui->tabWidget->setCurrentIndex(1);
   }
   catch (std::exception &e)
   {
