@@ -10,7 +10,6 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-
 }
 
 MainWindow::~MainWindow()
@@ -44,9 +43,8 @@ void MainWindow::on_buttonStart_clicked()
     progressDialog->setWindowTitle("Please wait");
     startSmo(srcNum, bufSize, devNum, l, a, b, appNum, smoStats, progressDialog);
     progressDialog->setValue(appNum);
-    QWidget::setEnabled(1);
-  //here: call StatissticsManager.printStstaicTabels to print stats to tableSourcesStats and tableDevicesStats
     smoStats.printStaticTables(ui->tableDevicesStats, ui->tableSourcesStats);
+    QWidget::setEnabled(1);
   }
   catch (std::exception &e)
   {

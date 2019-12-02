@@ -6,6 +6,7 @@ Application::Application(const double &tGen, const int &srcNum)
   tAwaitting = 0.;
   tLife = 0.;
   tProcessing = 0.;
+  tRelease = 0.;
   this->srcNum = srcNum;
   state = PREGEN;
 }
@@ -36,7 +37,8 @@ int Application::getIndex() const
 void Application::setProcessingTime(double &tProcessing)
 {
   state = INDEV;
-  tLife = tProcessing - tGen;
+  tLife = tAwaitting + tProcessing;
+  tRelease = tGen + tAwaitting + tProcessing;
   this->tProcessing = tProcessing;
 }
 void Application::setAwaittingTime(double &tEntry)
@@ -47,7 +49,7 @@ void Application::setAwaittingTime(double &tEntry)
   }
   else
   {
-    tAwaitting = 0;
+    tAwaitting = 0.;
   }
 }
 double Application::getProcessingTime() const
@@ -65,4 +67,8 @@ void Application::setState(AppState state)
 AppState Application::getState()
 {
   return state;
+}
+double Application::getReleaseTime() const
+{
+  return tRelease;
 }

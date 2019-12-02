@@ -3,6 +3,7 @@
 #include <vector>
 #include <list>
 #include <iostream>
+#include <cmath>
 #include <QTableWidget>
 #include <QTextEdit>
 #include <QString>

@@ -22,19 +22,19 @@ bool DeviceManager::isEmpty()
   return true;
 }
 
-Device *DeviceManager::getExpectedDevice(Application *appPtr)
+Device *DeviceManager::getExpectedDevice(double systemTime)
 {
-  Device *devWithMinProcessingTime = &devList.front();
+  Device *devWithMinReleaseTime = &devList.front();
   for(auto &d : devList)
   {
-    if(d.getProcessingTime() < devWithMinProcessingTime->getProcessingTime())
+    if(d.getReleaseTime() < devWithMinReleaseTime->getReleaseTime() && !d.isEmpty())
     {
-      devWithMinProcessingTime = &d;
+      devWithMinReleaseTime = &d;
     }
   }
-  if(devWithMinProcessingTime->getProcessingTime() <= appPtr->getGenTime())
+  if(devWithMinReleaseTime->getReleaseTime() <= systemTime)
   {
-    return devWithMinProcessingTime;
+    return devWithMinReleaseTime;
   }
   for(auto &d : devList)
   {
@@ -45,6 +45,7 @@ Device *DeviceManager::getExpectedDevice(Application *appPtr)
   }
   return nullptr;
 }
+
 void DeviceManager::setApplicationPtr(Device *devicePtr, Application *appPtr)
 {
   if(!devicePtr->isEmpty())
@@ -63,22 +64,37 @@ void DeviceManager::releaseAllApplications()
     }
   }
 }
+
 void DeviceManager::printDeviceState()
 {
   for(auto &&d : devList)
   {
     if(!d.isEmpty())
     {
-      std::cout << "Device <" << d.getIndex() << "> is busy for <" << d.getProcessingTime() << "> with Application <"
-                << d.getApplicationPtr()->getSrcNum() << "." << d.getApplicationPtr()->getIndex() << ">\n";
+      std::cout << "Device <" << d.getIndex() << "> will release in <" << d.getReleaseTime() << "> with Application <"
+                << d.getApplicationPtr()->getSrcNum() << "." << d.getApplicationPtr()->getIndex() << std::endl;
     }
     else
     {
-      std::cout << "Device <" << d.getIndex() << "> is empty\n";
+      std::cout << "Device <" << d.getIndex() << "> is empty" << std::endl;
     }
   }
 }
-std::list<Device> *DeviceManager::getDeviceList()
+
+std::vector<Device> *DeviceManager::getDeviceVector()
 {
   return &devList;
 }
+
+bool DeviceManager::isFull()
+{
+  for(auto &&d : devList)
+  {
+    if(d.isEmpty())
+    {
+      return false;
+    }
+  }
+  return true;
+}
+

@@ -30,6 +30,7 @@ std::vector<Application> generateApplicationsVector(const int &srcNum, const int
     newAppVector.push_back(newApplication);
     appCount++;
     s < (srcNum - 1) ? s++ : s = 0;
+    std::cout << newTime << std::endl;
   }
   std::sort(newAppVector.begin(), newAppVector.end(),
             [](Application &app1, Application &app2) -> bool
@@ -57,6 +58,7 @@ void startSmo(const int &srcNum, const int &bufSize, const int &devNum, const do
   std::vector<Application> applications = generateApplicationsVector(srcNum, appNum, l);
   DeviceManager devices(devNum, a, b);
   Buffer buffer(bufSize);
+  double systemTime = 0.;
   stats.updateRecord(applications);
   std::cout << "Applications generated" << std::endl;
   std::cout << "Buffer initialized" << std::endl;
@@ -71,19 +73,35 @@ void startSmo(const int &srcNum, const int &bufSize, const int &devNum, const do
     progressDialog->setLabelText("Simulation in progress...\nApplications left: " + QString::number(appNum - stats.getRejectedCount() - stats.getProcessedCount()));
     if(appIterator != applications.end())
     {
-      buffer.tryToAddApplicationPtr(&*appIterator);
+      systemTime = buffer.tryToAddApplicationPtr(&*appIterator);
       appIterator++;
       stats.updateRecord(applications);
+      //buffer.printBufferState();
     }
     if(!buffer.isEmpty())
     {
       Application *expectedApplicationPtr = buffer.getExpectedApplicationPtr();
-      Device *expectedDevicePtr = devices.getExpectedDevice(expectedApplicationPtr);
+      Device *expectedDevicePtr = devices.getExpectedDevice(systemTime);
       if(expectedDevicePtr != nullptr)
       {
         buffer.popThisApplicationPtr(expectedApplicationPtr);
         devices.setApplicationPtr(expectedDevicePtr, expectedApplicationPtr);
         stats.updateRecord(applications);
+        //devices.printDeviceState();
+        //buffer.printBufferState();
+      }
+      else
+      {
+//        if(devices.isFull() && buffer.isFull())
+//        {
+//          std::cerr << "DEVICES STUCK" << std::endl;
+//          devices.releaseAllApplications();
+//        }
+        if(appIterator == applications.end())
+        {
+          std::cerr << "DEVICES STUCK" << std::endl;
+          devices.releaseAllApplications();
+        }
       }
       expectedDevicePtr->~Device();
       expectedApplicationPtr->~Application();

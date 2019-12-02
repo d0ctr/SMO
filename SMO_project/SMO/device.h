@@ -21,9 +21,11 @@ public:
   Application *getApplicationPtr();
   int getAppCount();
   double getTimeCount();
+  double getReleaseTime();
 private:
   int index;
   double tProcessing;
+  double tRelease;
   int appCount;
   double timeCount;
   Application *appPtr;

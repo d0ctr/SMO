@@ -2,21 +2,25 @@
 
 Device::Device(const int &index, const int &a, const int &b)
 {
+  appPtr = nullptr;
   this->index = index;
   this->a = a;
   this->b = b;
   empty = true;
   tProcessing = 0.;
+  tRelease = 0.;
   appCount = 0;
   timeCount = 0.;
 }
 void Device::setApplicationPtr(Application *appPtr)
 {
+  double tEntry = getReleaseTime();
+  appPtr->setAwaittingTime(tEntry);
   this->appPtr = appPtr;
-  appPtr->setAwaittingTime(tProcessing);
   genProcessingTime();
   appPtr->setProcessingTime(tProcessing);
   appPtr->setState(INDEV);
+  this->tRelease = appPtr->getReleaseTime();
   empty = false;
   appCount++;
   timeCount += getProcessingTime();
@@ -32,10 +36,13 @@ void Device::genProcessingTime()
 Application *Device::popApplicationPtr()
 {
   Application *appPtrToReturn = appPtr;
-  appPtr = nullptr;
-  empty = true;
-  tProcessing = 0;
-  appPtrToReturn->setState(PROCESSED);
+  if(appPtr != nullptr)
+  {
+    appPtr = nullptr;
+    empty = true;
+    tProcessing = 0;
+    appPtrToReturn->setState(PROCESSED);
+  }
   return appPtrToReturn;
 }
 double Device::getProcessingTime()
@@ -57,4 +64,8 @@ int Device::getAppCount()
 double Device::getTimeCount()
 {
   return timeCount;
+}
+double Device::getReleaseTime()
+{
+  return tRelease;
 }
