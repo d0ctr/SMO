@@ -42,13 +42,13 @@ void startSmo(const int &srcNum, const int &bufSize, const int &devNum, const do
   DeviceManager devices(devNum, a, b);
   Buffer buffer(bufSize);
   double systemTime = 0.;
+  stats.updateRecord(applications, systemTime);
   std::cout << "Applications generated" << std::endl;
   std::cout << "Buffer initialized" << std::endl;
   std::cout << "Devices initialized" << std::endl;
   std::vector<Application>::iterator appIterator = applications.begin();
   while(!stats.isEnd(appNum))
   {
-    stats.updateRecord(applications, systemTime);
     if(progressDialog->wasCanceled())
     {
       break;
@@ -58,6 +58,7 @@ void startSmo(const int &srcNum, const int &bufSize, const int &devNum, const do
     {
       systemTime = buffer.tryToAddApplicationPtr(&*appIterator);
       appIterator++;
+      stats.updateRecord(applications, systemTime);
     }
     if(!buffer.isEmpty())
     {
@@ -65,9 +66,9 @@ void startSmo(const int &srcNum, const int &bufSize, const int &devNum, const do
       Device *expectedDevicePtr = devices.getExpectedDevice(systemTime);
       if(expectedDevicePtr != nullptr)
       {
-        stats.updateRecord(applications, systemTime);
         buffer.popThisApplicationPtr(expectedApplicationPtr);
         devices.setApplicationPtr(expectedDevicePtr, expectedApplicationPtr);
+        stats.updateRecord(applications, systemTime);
       }
       else
       {
@@ -75,6 +76,7 @@ void startSmo(const int &srcNum, const int &bufSize, const int &devNum, const do
         {
           std::cerr << "DEVICES STUCK" << std::endl;
           devices.releaseAllApplications();
+          stats.updateRecord(applications, systemTime);
         }
       }
       expectedDevicePtr->~Device();
@@ -83,9 +85,9 @@ void startSmo(const int &srcNum, const int &bufSize, const int &devNum, const do
     else
     {
       devices.releaseAllApplications();
+      stats.updateRecord(applications, systemTime);
     }
   }
-  stats.updateRecord(applications, systemTime);
   stats.pushDevices(devices);
   std::cout << "------------------\nSimulation ended" << std::endl;
 }
