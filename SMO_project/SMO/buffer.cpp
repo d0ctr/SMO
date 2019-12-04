@@ -3,14 +3,14 @@ Buffer::Buffer(const int &bufSize)
 {
   for(int i = 0; i < bufSize; i++)
   {
-    bufferList.push_back(BufferCell(i));
+    bufferVector.push_back(BufferCell(i));
   }
   sourcePackage = -1;
   this->bufSize = bufSize;
 }
 double Buffer::tryToAddApplicationPtr(Application *appPtr)
 {
-  for(auto&& bc : bufferList)
+  for(auto&& bc : bufferVector)
   {
     if(bc.isEmpty())
     {
@@ -23,7 +23,7 @@ double Buffer::tryToAddApplicationPtr(Application *appPtr)
 }
 bool Buffer::isEmpty()
 {
-  for(auto &&bc : bufferList)
+  for(auto &&bc : bufferVector)
   {
     if(!bc.isEmpty())
     {
@@ -34,7 +34,7 @@ bool Buffer::isEmpty()
 }
 bool Buffer::isFull()
 {
-  for(auto &&bc : bufferList)
+  for(auto &&bc : bufferVector)
   {
     if(bc.isEmpty())
     {
@@ -49,7 +49,7 @@ void Buffer::refactorBuffer()
   {
     return;
   }
-  for(std::list<BufferCell>::iterator it1 = bufferList.begin(), it2 = ++bufferList.begin(); it2 != bufferList.end() ; ++it1, ++it2)
+  for(std::vector<BufferCell>::iterator it1 = bufferVector.begin(), it2 = ++bufferVector.begin(); it2 != bufferVector.end() ; ++it1, ++it2)
   {
     if(it1->isEmpty() && !it2->isEmpty())
     {
@@ -62,7 +62,7 @@ Application *Buffer::getExpectedApplicationPtr()
 {
   if(sourcePackage != -1)
   {
-    for(auto &&bc : bufferList)
+    for(auto &&bc : bufferVector)
     {
       if(!bc.isEmpty())
       {
@@ -74,8 +74,8 @@ Application *Buffer::getExpectedApplicationPtr()
     }
     sourcePackage = -1;
   }
-  BufferCell *minBC = &bufferList.front();
-  for(auto &&bc : bufferList)
+  BufferCell *minBC = &bufferVector.front();
+  for(auto &&bc : bufferVector)
   {
    if(!bc.isEmpty() && bc.getApplicationPtr()->getSrcNum() < minBC->getApplicationPtr()->getSrcNum())
      {
@@ -87,7 +87,7 @@ Application *Buffer::getExpectedApplicationPtr()
 void Buffer::popThisApplicationPtr(const Application *appPtr)
 {
   sourcePackage = appPtr->getSrcNum();
-  for(auto &&bc : bufferList)
+  for(auto &&bc : bufferVector)
   {
     if(bc.getApplicationPtr() == appPtr)
     {
@@ -103,7 +103,7 @@ int Buffer::getSourcePackage()
 }
 void Buffer::printBufferState()
 {
-  for(auto &&bc : bufferList)
+  for(auto &&bc : bufferVector)
   {
     if(!bc.isEmpty())
     {
@@ -117,7 +117,7 @@ void Buffer::printBufferState()
   }
   std::cout << "Current package: " << getSourcePackage() << std::endl;
 }
-std::list<BufferCell> *Buffer::getBufferList()
+std::vector<BufferCell> *Buffer::getBufferVector()
 {
-  return &bufferList;
+  return &bufferVector;
 }

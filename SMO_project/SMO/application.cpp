@@ -1,6 +1,6 @@
 #include "application.h"
 
-Application::Application(const double &tGen, const int &srcNum)
+Application::Application(const double &tGen, const int &srcNum, const int &index)
 {
   this->tGen = tGen;
   tAwaitting = 0.;
@@ -9,6 +9,7 @@ Application::Application(const double &tGen, const int &srcNum)
   tRelease = 0.;
   this->srcNum = srcNum;
   state = PREGEN;
+  this->index = index;
 }
 int Application::getSrcNum() const
 {
@@ -71,4 +72,20 @@ AppState Application::getState()
 double Application::getReleaseTime() const
 {
   return tRelease;
+}
+void Application::setDeviceIndex(int index)
+{
+  deviceIndex = index;
+}
+void Application::setBufferCellIndex(int index)
+{
+  bufferCellIndex = index;
+}
+int Application::getDeviceIndex()
+{
+  return deviceIndex;
+}
+int Application::getBufferCellIndex()
+{
+  return bufferCellIndex;
 }

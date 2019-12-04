@@ -1,6 +1,4 @@
-#include <iostream>
-#include <exception>
-#include <QProgressDialog>
+
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "work.h"
@@ -36,14 +34,21 @@ void MainWindow::on_buttonStart_clicked()
     int a = aStr.toInt();
     int b = bStr.toInt();
     QProgressDialog *progressDialog = new QProgressDialog("Simulation in progress...", "&Cancel", 0, appNum);
-    StatisticsManager smoStats = StatisticsManager(appNum, devNum, bufSize, srcNum, progressDialog);
+    smoStats = StatisticsManager(appNum, devNum, bufSize, srcNum, progressDialog, ui->tableWidgetSources, ui->tableWidgetBuffer,
+                                                   ui->tableWidgetDevices, ui->tableWidgetRejected, ui->tableWidgetProcessed);
     QWidget::setEnabled(0);
     progressDialog->resize(progressDialog->size() + QSize(50, 0));
     progressDialog->setMinimumDuration(0);
     progressDialog->setWindowTitle("Please wait");
     startSmo(srcNum, bufSize, devNum, l, a, b, appNum, smoStats, progressDialog);
     progressDialog->setValue(appNum);
-    smoStats.printStaticTables(ui->tableDevicesStats, ui->tableSourcesStats);
+    ui->horizontalScrollBarSteps->setValue(0);
+    ui->horizontalScrollBarSteps->setMaximum(smoStats.getRecordCount() - 1);
+    ui->horizontalScrollBarSteps->setEnabled(1);
+    smoStats.printAutoMode(ui->tableDevicesStats, ui->tableSourcesStats);
+    smoStats.updateStepMode(0, ui->tableWidgetSources, ui->tableWidgetBuffer, ui->tableWidgetDevices,
+                            ui->tableWidgetRejected, ui->tableWidgetProcessed,
+                            ui->lineEditSystemTime, ui->lineEditOnStep, ui->lineEditAmountOfSteps);
     QWidget::setEnabled(1);
   }
   catch (std::exception &e)
@@ -54,3 +59,14 @@ void MainWindow::on_buttonStart_clicked()
 }
 
 
+
+void MainWindow::on_horizontalScrollBarSteps_sliderReleased()
+{
+
+}
+
+void MainWindow::on_horizontalScrollBarSteps_valueChanged(int value)
+{
+  smoStats.updateStepMode(value, ui->tableWidgetSources, ui->tableWidgetBuffer, ui->tableWidgetDevices, ui->tableWidgetRejected, ui->tableWidgetProcessed,
+                          ui->lineEditSystemTime, ui->lineEditOnStep, ui->lineEditAmountOfSteps);
+}

@@ -1,19 +1,69 @@
 #include "statisticsmanager.h"
 
-StatisticsManager::StatisticsManager(int appCount, int devNum, int bufSize, int srcCount, QProgressDialog *progressDialog)
+StatisticsManager::StatisticsManager(int appCount, int devNum, int bufSize, int srcCount, QProgressDialog *progressDialog,
+                                     QTableWidget *tableSources, QTableWidget *tableBuffer, QTableWidget *tableDevices, QTableWidget *tableRejected, QTableWidget *tableProcesed)
 {
-  iterationsCount = 0;
+  recordCount = 0;
   this->devNum = devNum;
   this->bufSize = bufSize;
   this->appCount = appCount;
   this->progressDialog = progressDialog;
   this->srcCount = srcCount;
+
+  QStringList vHeaderList = QStringList();
+  for(int i = 0; i < srcCount; i++)
+  {
+    vHeaderList << "Source " + QString::number(i + 1);
+
+  }
+  QStringList hHeaderList = QStringList();
+  hHeaderList << "Application";
+  tableSources->setRowCount(srcCount);
+  tableSources->setColumnCount(1);
+  tableSources->setVerticalHeaderLabels(vHeaderList);
+  tableSources->setHorizontalHeaderLabels(hHeaderList);
+
+  vHeaderList = QStringList();
+  for(int i = 0; i < bufSize; i++)
+  {
+    vHeaderList << "Cell " + QString::number(i + 1);
+
+  }
+  hHeaderList = QStringList();
+  hHeaderList << "Application";
+  tableBuffer->setRowCount(bufSize);
+  tableBuffer->setColumnCount(1);
+  tableBuffer->setVerticalHeaderLabels(vHeaderList);
+  tableBuffer->setHorizontalHeaderLabels(hHeaderList);
+
+  vHeaderList = QStringList();
+  for(int i = 0; i < devNum; i++)
+  {
+    vHeaderList << "Device " + QString::number(i + 1);
+  }
+  hHeaderList = QStringList();
+  hHeaderList << "Application";
+  tableDevices->setRowCount(devNum);
+  tableDevices->setColumnCount(1);
+  tableDevices->setVerticalHeaderLabels(vHeaderList);
+  tableDevices->setHorizontalHeaderLabels(hHeaderList);
+
+  hHeaderList = QStringList();
+  hHeaderList << "Application";
+  tableRejected->setColumnCount(1);
+  tableRejected->setHorizontalHeaderLabels(hHeaderList);
+
+  hHeaderList = QStringList();
+  hHeaderList << "Application";
+  tableProcesed->setColumnCount(1);
+  tableProcesed->setHorizontalHeaderLabels(hHeaderList);
 }
 
-void StatisticsManager::updateRecord(std::vector<Application> appVector)
+void StatisticsManager::updateRecord(std::vector<Application> appVector, double systemTime)
 {
-  iterationsRecord.push_back(appVector);
-  iterationsCount++;
+  appVectorRecord.push_back(appVector);
+  systemTimeRecord.push_back(systemTime);
+  recordCount++;
   processedCount = 0;
   rejectedCount = 0;
   for(auto a : appVector)
@@ -45,9 +95,9 @@ int StatisticsManager::getApplicationsCount()
 {
   return appCount;
 }
-int StatisticsManager::getIterationsCount()
+int StatisticsManager::getRecordCount()
 {
-  return iterationsCount;
+  return recordCount;
 }
 bool StatisticsManager::isEnd(const int &appNum)
 {
@@ -57,7 +107,97 @@ bool StatisticsManager::isEnd(const int &appNum)
   }
   return false;
 }
-void StatisticsManager::printStaticTables(QTableWidget *tableDevices, QTableWidget *tableSources)
+void StatisticsManager::updateStepMode(int recordNum, QTableWidget *tableSources, QTableWidget *tableBuffer, QTableWidget *tableDevices, QTableWidget *tableRejected, QTableWidget *tableProcesed,
+                                       QLineEdit *lineSystemTime, QLineEdit *lineOnStep, QLineEdit *lineAmountOfSteps)
+{
+  std::vector<Application> *realAppVector = &appVectorRecord[size_t(recordNum)];
+  std::vector<Application> realBuffer;
+  std::vector<Application> realDevices;
+  std::vector<Application> realProcessedVector;
+  std::vector<Application> realRejectedVector;
+  int realRejectedCount = 0;
+  int realProcessedCount = 0;
+  lineSystemTime->setText(QString::number(systemTimeRecord[size_t(recordNum)]));
+  lineOnStep->setText(QString::number(recordNum + 1));
+  lineAmountOfSteps->setText(QString::number(recordCount));
+  tableSources->clearContents();
+  tableBuffer->clearContents();
+  tableDevices->clearContents();
+  tableRejected->clearContents();
+  tableProcesed->clearContents();
+  for(auto a : *realAppVector)
+  {
+    switch(a.getState())
+    {
+      case PROCESSED:
+        realProcessedCount++;
+        realProcessedVector.push_back(a);
+        break;
+      case REJECTED:
+        realRejectedCount++;
+        realRejectedVector.push_back(a);
+        break;
+      case INBUF:
+        realBuffer.push_back(a);
+        break;
+      case INDEV:
+        realDevices.push_back(a);
+        break;
+      default:
+        break;
+
+    }
+  }
+
+  for(int i = 0; size_t(i) < realBuffer.size(); i++)
+  {
+    QString str = "<" + QString::number(realBuffer[size_t(i)].getSrcNum() + 1) + ", " + QString::number(realBuffer[size_t(i)].getIndex() + 1) +
+        "> with gen time: " + QString::number(realBuffer[size_t(i)].getGenTime());
+    QTableWidgetItem *cellItem = new QTableWidgetItem;
+    cellItem->setText(str);
+    tableBuffer->setItem(realBuffer[size_t(i)].getBufferCellIndex(), 0, cellItem);
+  }
+
+  for(int i = 0; size_t(i) < realDevices.size(); i++)
+  {
+    QString str = "<" + QString::number(realDevices[size_t(i)].getSrcNum() + 1) + ", " + QString::number(realDevices[size_t(i)].getIndex() + 1) +
+        "> will exit in: " + QString::number(realDevices[size_t(i)].getReleaseTime());
+    QTableWidgetItem *cellItem = new QTableWidgetItem;
+    cellItem->setText(str);
+    tableDevices->setItem(realDevices[size_t(i)].getDeviceIndex(), 0, cellItem);
+  }
+
+  for(auto &a : *realAppVector)
+  {
+    if(a.getState() == PREGEN)
+    {
+      QString str = "New app in: " + QString::number(a.getGenTime());
+      QTableWidgetItem *cellItem = new QTableWidgetItem;
+      cellItem->setText(str);
+      tableSources->setItem(a.getSrcNum(), 0, cellItem);
+      break;
+    }
+  }
+
+  tableRejected->setRowCount(realRejectedCount);
+  for(int i = 0; i < realRejectedCount; i++)
+  {
+    QString str = "<" + QString::number(realRejectedVector[size_t(i)].getSrcNum() + 1) + ", " + QString::number(realRejectedVector[size_t(i)].getIndex() + 1) + ">";
+    QTableWidgetItem *cellItem = new QTableWidgetItem;
+    cellItem->setText(str);
+    tableRejected->setItem(i, 0, cellItem);
+  }
+
+  tableProcesed->setRowCount(realProcessedCount);
+  for(int i = 0; i < realProcessedCount; i++)
+  {
+    QString str = "<" + QString::number(realProcessedVector[size_t(i)].getSrcNum() + 1) + ", " + QString::number(realProcessedVector[size_t(i)].getIndex() + 1) + ">";
+    QTableWidgetItem *cellItem = new QTableWidgetItem;
+    cellItem->setText(str);
+    tableProcesed->setItem(i, 0, cellItem);
+  }
+}
+void StatisticsManager::printAutoMode(QTableWidget *tableDevices, QTableWidget *tableSources)
 { 
   QStringList vHeaderListSources = QStringList();
   for(int i = 0; i < srcCount; i++)
@@ -88,7 +228,7 @@ void StatisticsManager::printStaticTables(QTableWidget *tableDevices, QTableWidg
     std::vector<double> tOWVector, tOPVector;
     double tIS = 0, tOW = 0, tOP = 0;
     int genCount = 0, rejCount = 0;
-    for(auto a : *&iterationsRecord.back())
+    for(auto a : *&appVectorRecord.back())
     {
       if(a.getSrcNum() == i)
       {
@@ -164,7 +304,7 @@ void StatisticsManager::printStaticTables(QTableWidget *tableDevices, QTableWidg
       tLastRelease = d.getReleaseTime();
     }
   }
-  double tSMOWork = tLastRelease - (iterationsRecord.back().front()).getGenTime();
+  double tSMOWork = tLastRelease - (appVectorRecord.back().front()).getGenTime();
   for(int i = 0; i < devNum; i++)
   {
     double timeCount = devices.getDeviceVector()->at(i).getTimeCount();

@@ -20,6 +20,7 @@ void Device::setApplicationPtr(Application *appPtr)
   genProcessingTime();
   appPtr->setProcessingTime(tProcessing);
   appPtr->setState(INDEV);
+  appPtr->setDeviceIndex(index);
   this->tRelease = appPtr->getReleaseTime();
   empty = false;
   appCount++;
