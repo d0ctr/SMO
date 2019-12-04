@@ -205,9 +205,10 @@ void StatisticsManager::printAutoMode(QTableWidget *tableDevices, QTableWidget *
     vHeaderListSources << "Source " + QString::number(i + 1);
 
   }
+  vHeaderListSources << "All sources";
   QStringList hHeaderListSources = QStringList();
   hHeaderListSources << "Generated" << "Processed" << "Rejected" << "Reject prob." << "Avrg. TIS" << "Avrg. TOW" << "Avrg. TOP" << "Disp. TOW" << "Disp. TOP"; // TOW - time of waitting, TIS - time in system, TOP - time of processing
-  tableSources->setRowCount(srcCount);
+  tableSources->setRowCount(srcCount + 1);
   tableSources->setColumnCount(9);
   tableSources->setVerticalHeaderLabels(vHeaderListSources);
   tableSources->setHorizontalHeaderLabels(hHeaderListSources);
@@ -296,6 +297,73 @@ void StatisticsManager::printAutoMode(QTableWidget *tableDevices, QTableWidget *
     tableSources->setItem(i , 8, dispTOPItem);
 
   }
+
+  std::vector<double> tOWVector, tOPVector;
+  double tIS = 0, tOW = 0, tOP = 0;
+  int genCount = 0, rejCount = 0;
+  for(auto a : *&appVectorRecord.back())
+  {
+    genCount++;
+    tOWVector.push_back(a.getAwaittingTime());
+    tOPVector.push_back(a.getProcessingTime());
+    tOP += a.getProcessingTime();
+    tOW += a.getAwaittingTime();
+    tIS += a.getLifeTime();
+    if(a.getState() == REJECTED)
+    {
+      rejCount++;
+    }
+  }
+  int proCount = genCount - rejCount;
+  double x1 = 0, x2 = 0;
+  for(auto v : tOWVector)
+  {
+    x1 += v;
+    x2 += pow(v, 2);
+  }
+  x1 = pow(x1/proCount, 2);
+  x2 = x2 / proCount;
+  double dispTOW = x2 - x1;
+  x1 = 0;
+  x2 = 0;
+  for(auto v : tOPVector)
+  {
+    x1 += v;
+    x2 += pow(v, 2);
+  }
+  x1 = pow(x1/proCount, 2);
+  x2 = x2 / proCount;
+  double dispTOP = x2 - x1;
+
+
+  QTableWidgetItem *genCountItem = new QTableWidgetItem;
+  genCountItem->setText(QString::number(genCount));
+  QTableWidgetItem *rejCountItem = new QTableWidgetItem;
+  rejCountItem->setText(QString::number(rejCount));
+  QTableWidgetItem *procCountItem = new QTableWidgetItem;
+  procCountItem->setText(QString::number(proCount));
+  QTableWidgetItem *rejProbItem = new QTableWidgetItem;
+  rejProbItem->setText(QString::number(double(rejCount) / double (genCount)));
+  QTableWidgetItem *dispTOWItem = new QTableWidgetItem;
+  dispTOWItem->setText(QString::number(dispTOW));
+  QTableWidgetItem *dispTOPItem = new QTableWidgetItem;
+  dispTOPItem->setText(QString::number(dispTOP));
+  QTableWidgetItem *tOPItem = new QTableWidgetItem;
+  tOPItem->setText(QString::number(tOP));
+  QTableWidgetItem *tOWItem = new QTableWidgetItem;
+  tOWItem->setText(QString::number(tOW));
+  QTableWidgetItem *tISItem = new QTableWidgetItem;
+  tISItem->setText(QString::number(tIS));
+
+  tableSources->setItem(srcCount, 0, genCountItem);
+  tableSources->setItem(srcCount, 1, procCountItem);
+  tableSources->setItem(srcCount, 2, rejCountItem);
+  tableSources->setItem(srcCount, 3, rejProbItem);
+  tableSources->setItem(srcCount, 4, tISItem);
+  tableSources->setItem(srcCount, 5, tOWItem);
+  tableSources->setItem(srcCount, 6, tOPItem);
+  tableSources->setItem(srcCount, 7, dispTOWItem);
+  tableSources->setItem(srcCount, 8, dispTOPItem);
   double tLastRelease = 0.;
   for(auto d : *devices.getDeviceVector())
   {
