@@ -50,6 +50,7 @@ void MainWindow::on_buttonStart_clicked()
                             ui->tableWidgetRejected, ui->tableWidgetProcessed,
                             ui->lineEditSystemTime, ui->lineEditOnStep, ui->lineEditAmountOfSteps);
     QWidget::setEnabled(1);
+    ui->tabWidget->setCurrentIndex(1);
   }
   catch (std::exception &e)
   {
