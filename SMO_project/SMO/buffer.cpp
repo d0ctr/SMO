@@ -8,24 +8,35 @@ Buffer::Buffer(const int &bufSize)
   sourcePackage = -1;
   this->bufSize = bufSize;
 }
-bool Buffer::tryToAddApplicationPtr(Application *appPtr)
+double Buffer::tryToAddApplicationPtr(Application *appPtr)
 {
   for(auto&& bc : bufferList)
   {
     if(bc.isEmpty())
     {
       bc.setApplication(appPtr);
-      return true;
+      return appPtr->getGenTime();
     }
   }
   appPtr->setState(REJECTED);
-  return false;
+  return appPtr->getGenTime();
 }
 bool Buffer::isEmpty()
 {
   for(auto &&bc : bufferList)
   {
     if(!bc.isEmpty())
+    {
+      return false;
+    }
+  }
+  return true;
+}
+bool Buffer::isFull()
+{
+  for(auto &&bc : bufferList)
+  {
+    if(bc.isEmpty())
     {
       return false;
     }
@@ -57,8 +68,7 @@ Application *Buffer::getExpectedApplicationPtr()
       {
         if(bc.getApplicationPtr()->getSrcNum() == sourcePackage)
         {
-          Application *appPtrToReturn = bc.getApplicationPtr();
-          return appPtrToReturn;
+          return bc.getApplicationPtr();
         }
       }
     }
@@ -67,16 +77,12 @@ Application *Buffer::getExpectedApplicationPtr()
   BufferCell *minBC = &bufferList.front();
   for(auto &&bc : bufferList)
   {
-   if(!bc.isEmpty())
-   {
-     if(bc.getApplicationPtr()->getSrcNum() < minBC->getApplicationPtr()->getSrcNum())
+   if(!bc.isEmpty() && bc.getApplicationPtr()->getSrcNum() < minBC->getApplicationPtr()->getSrcNum())
      {
        minBC = &bc;
      }
-   }
   }
-  Application *appPtrToReturn = minBC->getApplicationPtr();
-  return appPtrToReturn;
+  return minBC->getApplicationPtr();
 }
 void Buffer::popThisApplicationPtr(const Application *appPtr)
 {
@@ -91,6 +97,10 @@ void Buffer::popThisApplicationPtr(const Application *appPtr)
   }
   refactorBuffer();
 }
+int Buffer::getSourcePackage()
+{
+  return sourcePackage;
+}
 void Buffer::printBufferState()
 {
   for(auto &&bc : bufferList)
@@ -98,23 +108,14 @@ void Buffer::printBufferState()
     if(!bc.isEmpty())
     {
       std::cout << "BufferCell <" << bc.getIndex() << "> has Application <" << bc.getApplicationPtr()->getSrcNum()
-                << "." << bc.getApplicationPtr()->getIndex() << "> with Life time <" << bc.getApplicationPtr()->getLifeTime() << ">\n";
+                << "." << bc.getApplicationPtr()->getIndex() << "> with Gen time <" << bc.getApplicationPtr()->getGenTime() << std::endl;
     }
     else
     {
-      std::cout << "BufferCell <" << bc.getIndex() << "> is empty\n";
+      std::cout << "BufferCell <" << bc.getIndex() << "> is empty" << std::endl;
     }
   }
-}
-void Buffer::updateLifeTime(double &tLifeToAdd)
-{
-  for(auto &&bc : bufferList)
-  {
-    if(!bc.isEmpty())
-    {
-      bc.updateApplicationLifeTime(tLifeToAdd);
-    }
-  }
+  std::cout << "Current package: " << getSourcePackage() << std::endl;
 }
 std::list<BufferCell> *Buffer::getBufferList()
 {

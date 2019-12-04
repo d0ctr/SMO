@@ -1,108 +1,30 @@
 #include "statisticsmanager.h"
 
-StatisticsManager::StatisticsManager(QTableWidget *bufferTable, QTableWidget *deviceTable, QTableWidget *rejectedTable, QTableWidget *processedTable,
-                                     int appCount, int devNum, int bufSize, QProgressDialog *progressDialog)
+StatisticsManager::StatisticsManager(int appCount, int devNum, int bufSize, int srcCount, QProgressDialog *progressDialog)
 {
-  this->bufferTable = bufferTable;
-  this->deviceTable = deviceTable;
-  this->rejectedTable = rejectedTable;
-  this->processedTable = processedTable;
   iterationsCount = 0;
   this->devNum = devNum;
   this->bufSize = bufSize;
   this->appCount = appCount;
   this->progressDialog = progressDialog;
-
-  bufferTable->setColumnCount(1);
-  bufferTable->setColumnWidth(0, 300);
-  bufferTable->setRowCount(bufSize);
-  bufferTable->setMaximumHeight((bufSize + 2) * bufferTable->rowHeight(bufSize - 1));
-
-  deviceTable->setColumnCount(1);
-  deviceTable->setColumnWidth(0, 300);
-  deviceTable->setRowCount(devNum);
-  deviceTable->setMaximumHeight((devNum + 2) * deviceTable->rowHeight(devNum - 1));
-
-  rejectedTable->setColumnCount(1);
-  processedTable->setColumnCount(1);
-  processedTable->setColumnWidth(0, 300);
+  this->srcCount = srcCount;
 }
 
-void StatisticsManager::updateRecord(std::vector<Application> appVector, Buffer &buffer, DeviceManager &devices)
+void StatisticsManager::updateRecord(std::vector<Application> appVector)
 {
   iterationsRecord.push_back(appVector);
+  iterationsCount++;
   processedCount = 0;
   rejectedCount = 0;
-  int bufPosition = 0;
-  int devPosition = 0;
-  QString cellContentText;
-  QTableWidgetItem *cellContent;
-  bufferTable->clear();
-  deviceTable->clear();
-  processedTable->clear();
-  rejectedTable->clear();
-  for(auto b : *buffer.getBufferList())
-  {
-    if(!b.isEmpty())
-    {
-      cellContent = new QTableWidgetItem;
-      cellContentText = QString();
-      cellContentText.append("App: ").append(QString::number(b.getApplicationPtr()->getSrcNum())).append(".")
-          .append(QString::number(b.getApplicationPtr()->getIndex())).append(" Life: ").append(QString::number(b.getApplicationPtr()->getLifeTime()))
-          .append(" Waitting: ").append(QString::number(b.getApplicationPtr()->getAwaittingTime()));
-      cellContent->setText(cellContentText);
-      bufferTable->setItem(b.getIndex(), 0, cellContent);
-    }
-    else
-    {
-      cellContent = new QTableWidgetItem;
-      cellContentText = "EMPTY";
-      cellContent->setText(cellContentText);
-      bufferTable->setItem(b.getIndex(), 0, cellContent);
-    }
-  }
-  for(auto d : *devices.getDeviceList())
-  {
-    if(!d.isEmpty())
-    {
-      cellContent = new QTableWidgetItem;
-      cellContentText = QString();
-      cellContentText.append("App: ").append(QString::number(d.getApplicationPtr()->getSrcNum())).append(".")
-          .append(QString::number(d.getApplicationPtr()->getIndex())).append(" Life: ").append(QString::number(d.getApplicationPtr()->getLifeTime()))
-          .append(" Processing: ").append(QString::number(d.getApplicationPtr()->getProcessingTime()));
-      cellContent->setText(cellContentText);
-      deviceTable->setItem(d.getIndex(), 0, cellContent);
-    }
-    else
-    {
-      cellContent = new QTableWidgetItem;
-      cellContentText = "EMPTY";
-      cellContent->setText(cellContentText);
-      deviceTable->setItem(d.getIndex(), 0, cellContent);
-    }
-  }
   for(auto a : appVector)
   {
     switch(a.getState())
     {
     case PROCESSED:
       processedCount++;
-      processedTable->setRowCount(processedCount);
-      cellContent = new QTableWidgetItem;
-      cellContentText = QString();
-      cellContentText.append("App: ").append(QString::number(a.getSrcNum())).append(".").append(QString::number(a.getIndex()))
-          .append(" Life: ").append(QString::number(a.getLifeTime()));
-      cellContent->setText(cellContentText);
-      processedTable->setItem(processedCount - 1, 0, cellContent);
       break;
     case REJECTED:
-      rejectedCount++;
-      rejectedTable->setRowCount(rejectedCount);
-      cellContent = new QTableWidgetItem;
-      cellContentText = QString();
-      cellContentText.append("App: ").append(QString::number(a.getSrcNum())).append(".").append(QString::number(a.getIndex()));
-      cellContent->setText(cellContentText);
-      rejectedTable->setItem(rejectedCount - 1, 0, cellContent);
+      rejectedCount++; 
       break;
     default:
       break;
@@ -135,17 +57,123 @@ bool StatisticsManager::isEnd(const int &appNum)
   }
   return false;
 }
-void StatisticsManager::printStats(Buffer &buffer, DeviceManager &devices)
-{
-  QString cellContentText;
-  QTableWidgetItem *cellContent;
-  for(auto d : *devices.getDeviceList())
+void StatisticsManager::printStaticTables(QTableWidget *tableDevices, QTableWidget *tableSources)
+{ 
+  QStringList vHeaderListSources = QStringList();
+  for(int i = 0; i < srcCount; i++)
   {
-    cellContent = new QTableWidgetItem;
-    cellContentText = QString();
-    cellContentText.append("AppCount: ").append(QString::number(d.getAppCount())).append(" Average time: ")
-        .append(QString::number(d.getTimeCount() / d.getAppCount()));
-    cellContent->setText(cellContentText);
-    deviceTable->setItem(d.getIndex(), 0, cellContent);
+    vHeaderListSources << "Source " + QString::number(i + 1);
+
   }
+  QStringList hHeaderListSources = QStringList();
+  hHeaderListSources << "Generated" << "Processed" << "Rejected" << "Reject prob." << "Avrg. TIS" << "Avrg. TOW" << "Avrg. TOP" << "Disp. TOW" << "Disp. TOP"; // TOW - time of waitting, TIS - time in system, TOP - time of processing
+  tableSources->setRowCount(srcCount);
+  tableSources->setColumnCount(9);
+  tableSources->setVerticalHeaderLabels(vHeaderListSources);
+  tableSources->setHorizontalHeaderLabels(hHeaderListSources);
+
+  QStringList vHeaderListDevices = QStringList();
+  for(int i = 0; i < devNum; i++)
+  {
+    vHeaderListDevices << "Device " + QString::number(i + 1);
+  }
+  QStringList hHeaderListDevices = QStringList();
+  hHeaderListDevices << "Efficiency";
+  tableDevices->setColumnCount(1);
+  tableDevices->setRowCount(devNum);
+  tableDevices->setVerticalHeaderLabels(vHeaderListDevices);
+  tableDevices->setHorizontalHeaderLabels(hHeaderListDevices);
+  for(int i = 0; i < srcCount; i++)
+  {
+    std::vector<double> tOWVector, tOPVector;
+    double tIS = 0, tOW = 0, tOP = 0;
+    int genCount = 0, rejCount = 0;
+    for(auto a : *&iterationsRecord.back())
+    {
+      if(a.getSrcNum() == i)
+      {
+        genCount++;
+        tOWVector.push_back(a.getAwaittingTime());
+        tOPVector.push_back(a.getProcessingTime());
+        tOP += a.getProcessingTime();
+        tOW += a.getAwaittingTime();
+        tIS += a.getLifeTime();
+        if(a.getState() == REJECTED)
+        {
+          rejCount++;
+        }
+      }
+    }
+    int proCount = genCount - rejCount;
+    double x1 = 0, x2 = 0;
+    for(auto v : tOWVector)
+    {
+      x1 += v;
+      x2 += pow(v, 2);
+    }
+    x1 = pow(x1/proCount, 2);
+    x2 = x2 / proCount;
+    double dispTOW = x2 - x1;
+    x1 = 0;
+    x2 = 0;
+    for(auto v : tOPVector)
+    {
+      x1 += v;
+      x2 += pow(v, 2);
+    }
+    x1 = pow(x1/proCount, 2);
+    x2 = x2 / proCount;
+    double dispTOP = x2 - x1;
+
+
+    QTableWidgetItem *genCountItem = new QTableWidgetItem;
+    genCountItem->setText(QString::number(genCount));
+    QTableWidgetItem *rejCountItem = new QTableWidgetItem;
+    rejCountItem->setText(QString::number(rejCount));
+    QTableWidgetItem *procCountItem = new QTableWidgetItem;
+    procCountItem->setText(QString::number(proCount));
+    QTableWidgetItem *rejProbItem = new QTableWidgetItem;
+    rejProbItem->setText(QString::number(double(rejCount) / double (genCount)));
+    QTableWidgetItem *dispTOWItem = new QTableWidgetItem;
+    dispTOWItem->setText(QString::number(dispTOW));
+    QTableWidgetItem *dispTOPItem = new QTableWidgetItem;
+    dispTOPItem->setText(QString::number(dispTOP));
+    QTableWidgetItem *tOPItem = new QTableWidgetItem;
+    tOPItem->setText(QString::number(tOP));
+    QTableWidgetItem *tOWItem = new QTableWidgetItem;
+    tOWItem->setText(QString::number(tOW));
+    QTableWidgetItem *tISItem = new QTableWidgetItem;
+    tISItem->setText(QString::number(tIS));
+
+    tableSources->setItem(i , 0, genCountItem);
+    tableSources->setItem(i , 1, procCountItem);
+    tableSources->setItem(i , 2, rejCountItem);
+    tableSources->setItem(i , 3, rejProbItem);
+    tableSources->setItem(i , 4, tISItem);
+    tableSources->setItem(i , 5, tOWItem);
+    tableSources->setItem(i , 6, tOPItem);
+    tableSources->setItem(i , 7, dispTOWItem);
+    tableSources->setItem(i , 8, dispTOPItem);
+
+  }
+  double tLastRelease = 0.;
+  for(auto d : *devices.getDeviceVector())
+  {
+    if(d.getReleaseTime() > tLastRelease)
+    {
+      tLastRelease = d.getReleaseTime();
+    }
+  }
+  double tSMOWork = tLastRelease - (iterationsRecord.back().front()).getGenTime();
+  for(int i = 0; i < devNum; i++)
+  {
+    double timeCount = devices.getDeviceVector()->at(i).getTimeCount();
+    QTableWidgetItem *efficiencyItem = new QTableWidgetItem;
+    efficiencyItem->setText(QString::number((timeCount / tSMOWork) * 100) + QString('%'));
+    tableDevices->setItem(i , 0, efficiencyItem);
+  }
+}
+void StatisticsManager::pushDevices(DeviceManager devices)
+{
+  this->devices = devices;
 }

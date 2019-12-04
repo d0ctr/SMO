@@ -22,29 +22,37 @@ bool DeviceManager::isEmpty()
   return true;
 }
 
-Device *DeviceManager::getDevice()
+Device *DeviceManager::getExpectedDevice(double systemTime)
 {
-  Device *devWithMinProcessingTime = &devList.front();
-  for(auto &&d : devList)
+  Device *devWithMinReleaseTime = &devList.front();
+  for(auto &d : devList)
+  {
+    if(d.getReleaseTime() < devWithMinReleaseTime->getReleaseTime() && !d.isEmpty())
+    {
+      devWithMinReleaseTime = &d;
+    }
+  }
+  if(devWithMinReleaseTime->getReleaseTime() <= systemTime)
+  {
+    return devWithMinReleaseTime;
+  }
+  for(auto &d : devList)
   {
     if(d.isEmpty())
     {
       return &d;
     }
-    else if(d.getApplicationPtr()->getLifeTime() < devWithMinProcessingTime->getApplicationPtr()->getLifeTime())
-    {
-      devWithMinProcessingTime = &d;
-    }
   }
-  return devWithMinProcessingTime;
+  return nullptr;
 }
-void DeviceManager::setApplicationPtr(Device *device, Application *appPtr)
+
+void DeviceManager::setApplicationPtr(Device *devicePtr, Application *appPtr)
 {
-  if(!device->isEmpty())
+  if(!devicePtr->isEmpty())
   {
-    device->popApplicationPtr();
+    devicePtr->popApplicationPtr();
   }
-  device->setApplicationPtr(appPtr);
+  devicePtr->setApplicationPtr(appPtr);
 }
 void DeviceManager::releaseAllApplications()
 {
@@ -56,22 +64,37 @@ void DeviceManager::releaseAllApplications()
     }
   }
 }
+
 void DeviceManager::printDeviceState()
 {
   for(auto &&d : devList)
   {
     if(!d.isEmpty())
     {
-      std::cout << "Device <" << d.getIndex() << "> is busy for <" << d.getProcessingTime() << "> with Application <"
-                << d.getApplicationPtr()->getSrcNum() << "." << d.getApplicationPtr()->getIndex() << ">\n";
+      std::cout << "Device <" << d.getIndex() << "> will release in <" << d.getReleaseTime() << "> with Application <"
+                << d.getApplicationPtr()->getSrcNum() << "." << d.getApplicationPtr()->getIndex() << std::endl;
     }
     else
     {
-      std::cout << "Device <" << d.getIndex() << "> is empty\n";
+      std::cout << "Device <" << d.getIndex() << "> is empty" << std::endl;
     }
   }
 }
-std::list<Device> *DeviceManager::getDeviceList()
+
+std::vector<Device> *DeviceManager::getDeviceVector()
 {
   return &devList;
 }
+
+bool DeviceManager::isFull()
+{
+  for(auto &&d : devList)
+  {
+    if(d.isEmpty())
+    {
+      return false;
+    }
+  }
+  return true;
+}
+

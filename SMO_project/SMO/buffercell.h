@@ -14,7 +14,6 @@ public:
   int getIndex();
   Application *popApplicationPtr();
   Application *getApplicationPtr();
-  void updateApplicationLifeTime(double &tLifeToAdd);
 private:
   int index;
   bool empty;

@@ -30,7 +30,3 @@ Application *BufferCell::getApplicationPtr()
 {
   return appPtr;
 }
-void BufferCell::updateApplicationLifeTime(double &tLifeToAdd)
-{
-  appPtr->addLifeTime(tLifeToAdd);
-}

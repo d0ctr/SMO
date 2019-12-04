@@ -15,12 +15,14 @@ public:
   void setIndex(const int &index);
   int getIndex() const;
   void setProcessingTime(double &tProcessing);
-  double getProcessingTime();
-  double getAwaittingTime();
+  double getProcessingTime() const;
+  double getAwaittingTime() const;
+  double getReleaseTime() const;
+  void setAwaittingTime(double &tEnrty);
   void setState(AppState state);
   AppState getState();
 private:
-  double tGen, tLife, tProcessing;
+  double tGen, tLife, tProcessing, tAwaitting, tRelease;
   int srcNum;
   int index;
   AppState state;

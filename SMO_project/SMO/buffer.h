@@ -11,13 +11,15 @@ public:
   ~Buffer() = default;
   Buffer(const int &bufSize);
   std::list<BufferCell> *getBufferList();
-  bool tryToAddApplicationPtr(Application *appPtr);
+  double tryToAddApplicationPtr(Application *appPtr);
   bool isEmpty();
   void refactorBuffer();
+  BufferCell *getExpectedApplicationBufferCellPtr();
   Application *getExpectedApplicationPtr();
   void popThisApplicationPtr(const Application *appPtr);
   void printBufferState();
-  void updateLifeTime(double &tLifeToAdd);
+  bool isFull();
+  int getSourcePackage();
 private:
   std::list<BufferCell> bufferList;
   int sourcePackage;

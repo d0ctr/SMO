@@ -1,6 +1,6 @@
 #ifndef DEVICEMANAGER_H
 #define DEVICEMANAGER_H
-#include <list>
+#include <vector>
 #include <iostream>
 #include "device.h"
 
@@ -11,13 +11,14 @@ public:
   ~DeviceManager() = default;
   DeviceManager(const int &devNum, const int &a, const int &b);
   bool isEmpty();
-  Device *getDevice();
-  std::list<Device> *getDeviceList();
+  Device *getExpectedDevice(double systemTime);
+  std::vector<Device> *getDeviceVector();
   void releaseAllApplications();
-  void setApplicationPtr(Device *device, Application *appPtr);
+  void setApplicationPtr(Device *devicePtr, Application *appPtr);
   void printDeviceState();
+  bool isFull();
 private:
-  std::list<Device> devList;
+  std::vector<Device> devList;
   int devNum;
 };
 
