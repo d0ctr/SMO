@@ -1,6 +1,6 @@
 #ifndef BUFFER_H
 #define BUFFER_H
-#include <list>
+#include <vector>
 #include <iostream>
 #include "buffercell.h"
 
@@ -10,7 +10,7 @@ public:
   Buffer() = default;
   ~Buffer() = default;
   Buffer(const int &bufSize);
-  std::list<BufferCell> *getBufferList();
+  std::vector<BufferCell> *getBufferVector();
   double tryToAddApplicationPtr(Application *appPtr);
   bool isEmpty();
   void refactorBuffer();
@@ -21,7 +21,7 @@ public:
   bool isFull();
   int getSourcePackage();
 private:
-  std::list<BufferCell> bufferList;
+  std::vector<BufferCell> bufferVector;
   int sourcePackage;
   int bufSize;
 };

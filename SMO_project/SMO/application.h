@@ -7,7 +7,7 @@ class Application
 public:
   Application() = default;
   ~Application() = default;
-  Application(const double &tGen, const int &srcNum);
+  Application(const double &tGen, const int &srcNum, const int &index);
   void addLifeTime(const double &t);
   double getGenTime() const;
   double getLifeTime() const;
@@ -21,10 +21,13 @@ public:
   void setAwaittingTime(double &tEnrty);
   void setState(AppState state);
   AppState getState();
+  void setBufferCellIndex(int index);
+  void setDeviceIndex(int index);
+  int getBufferCellIndex();
+  int getDeviceIndex();
 private:
   double tGen, tLife, tProcessing, tAwaitting, tRelease;
-  int srcNum;
-  int index;
+  int srcNum, index, bufferCellIndex, deviceIndex;
   AppState state;
 };
 #endif // APPLICATION_H

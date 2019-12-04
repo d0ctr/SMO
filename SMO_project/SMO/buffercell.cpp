@@ -13,6 +13,7 @@ void BufferCell::setApplication(Application *appPtr)
 {
   empty = false;
   this->appPtr = appPtr;
+  appPtr->setBufferCellIndex(index);
   appPtr->setState(INBUF);
 }
 int BufferCell::getIndex()

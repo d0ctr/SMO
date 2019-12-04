@@ -26,29 +26,12 @@ std::vector<Application> generateApplicationsVector(const int &srcNum, const int
   {
     double r = double(rand())/RAND_MAX;
     newTime += -(1./l) * log(r);
-    Application newApplication(newTime, s);
+    Application newApplication(newTime, appCount % srcNum, appCount / srcNum);
     newAppVector.push_back(newApplication);
     appCount++;
-    s < (srcNum - 1) ? s++ : s = 0;
     std::cout << newTime << std::endl;
   }
-  std::sort(newAppVector.begin(), newAppVector.end(),
-            [](Application &app1, Application &app2) -> bool
-  {
-    return app1.getGenTime() < app2.getGenTime();
-  });
-  for(int i = 0; i < srcNum; i++)
-  {
-    int indexCounter = 0;
-    for(auto &&a : newAppVector)
-    {
-      if(a.getSrcNum() == i)
-      {
-        a.setIndex(indexCounter);
-        indexCounter++;
-      }
-    }
-  }
+
   return newAppVector;
 }
 
@@ -59,13 +42,13 @@ void startSmo(const int &srcNum, const int &bufSize, const int &devNum, const do
   DeviceManager devices(devNum, a, b);
   Buffer buffer(bufSize);
   double systemTime = 0.;
-  stats.updateRecord(applications);
   std::cout << "Applications generated" << std::endl;
   std::cout << "Buffer initialized" << std::endl;
   std::cout << "Devices initialized" << std::endl;
   std::vector<Application>::iterator appIterator = applications.begin();
   while(!stats.isEnd(appNum))
   {
+    stats.updateRecord(applications, systemTime);
     if(progressDialog->wasCanceled())
     {
       break;
@@ -75,8 +58,6 @@ void startSmo(const int &srcNum, const int &bufSize, const int &devNum, const do
     {
       systemTime = buffer.tryToAddApplicationPtr(&*appIterator);
       appIterator++;
-      stats.updateRecord(applications);
-      //buffer.printBufferState();
     }
     if(!buffer.isEmpty())
     {
@@ -84,19 +65,12 @@ void startSmo(const int &srcNum, const int &bufSize, const int &devNum, const do
       Device *expectedDevicePtr = devices.getExpectedDevice(systemTime);
       if(expectedDevicePtr != nullptr)
       {
+        stats.updateRecord(applications, systemTime);
         buffer.popThisApplicationPtr(expectedApplicationPtr);
         devices.setApplicationPtr(expectedDevicePtr, expectedApplicationPtr);
-        stats.updateRecord(applications);
-        //devices.printDeviceState();
-        //buffer.printBufferState();
       }
       else
       {
-//        if(devices.isFull() && buffer.isFull())
-//        {
-//          std::cerr << "DEVICES STUCK" << std::endl;
-//          devices.releaseAllApplications();
-//        }
         if(appIterator == applications.end())
         {
           std::cerr << "DEVICES STUCK" << std::endl;
@@ -109,9 +83,9 @@ void startSmo(const int &srcNum, const int &bufSize, const int &devNum, const do
     else
     {
       devices.releaseAllApplications();
-      stats.updateRecord(applications);
     }
   }
+  stats.updateRecord(applications, systemTime);
   stats.pushDevices(devices);
   std::cout << "------------------\nSimulation ended" << std::endl;
 }

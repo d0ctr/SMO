@@ -6,13 +6,13 @@ DeviceManager::DeviceManager(const int &devNum, const int &a, const int &b)
   for(int i = 0; i < devNum; i++)
   {
     Device newDevice(i, a, b);
-    devList.push_back(newDevice);
+    devVector.push_back(newDevice);
   }
 
 }
 bool DeviceManager::isEmpty()
 {
-  for(auto &&d : devList)
+  for(auto &&d : devVector)
   {
     if(!d.isEmpty())
     {
@@ -24,8 +24,8 @@ bool DeviceManager::isEmpty()
 
 Device *DeviceManager::getExpectedDevice(double systemTime)
 {
-  Device *devWithMinReleaseTime = &devList.front();
-  for(auto &d : devList)
+  Device *devWithMinReleaseTime = &devVector.front();
+  for(auto &d : devVector)
   {
     if(d.getReleaseTime() < devWithMinReleaseTime->getReleaseTime() && !d.isEmpty())
     {
@@ -36,7 +36,7 @@ Device *DeviceManager::getExpectedDevice(double systemTime)
   {
     return devWithMinReleaseTime;
   }
-  for(auto &d : devList)
+  for(auto &d : devVector)
   {
     if(d.isEmpty())
     {
@@ -56,7 +56,7 @@ void DeviceManager::setApplicationPtr(Device *devicePtr, Application *appPtr)
 }
 void DeviceManager::releaseAllApplications()
 {
-  for(auto &&d : devList)
+  for(auto &&d : devVector)
   {
     if(!d.isEmpty())
     {
@@ -67,7 +67,7 @@ void DeviceManager::releaseAllApplications()
 
 void DeviceManager::printDeviceState()
 {
-  for(auto &&d : devList)
+  for(auto &&d : devVector)
   {
     if(!d.isEmpty())
     {
@@ -83,12 +83,12 @@ void DeviceManager::printDeviceState()
 
 std::vector<Device> *DeviceManager::getDeviceVector()
 {
-  return &devList;
+  return &devVector;
 }
 
 bool DeviceManager::isFull()
 {
-  for(auto &&d : devList)
+  for(auto &&d : devVector)
   {
     if(d.isEmpty())
     {

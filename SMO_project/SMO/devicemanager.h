@@ -18,7 +18,7 @@ public:
   void printDeviceState();
   bool isFull();
 private:
-  std::vector<Device> devList;
+  std::vector<Device> devVector;
   int devNum;
 };
 
