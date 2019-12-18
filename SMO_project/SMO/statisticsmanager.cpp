@@ -275,7 +275,7 @@ void StatisticsManager::printAutoMode(QTableWidget *tableDevices, QTableWidget *
     QTableWidgetItem *procCountItem = new QTableWidgetItem;
     procCountItem->setText(QString::number(proCount));
     QTableWidgetItem *rejProbItem = new QTableWidgetItem;
-    rejProbItem->setText(QString::number(double(rejCount) / double (genCount)));
+    rejProbItem->setText(QString::number(double(rejCount) / double (genCount) * 100) + "%");
     QTableWidgetItem *dispTOWItem = new QTableWidgetItem;
     dispTOWItem->setText(QString::number(dispTOW));
     QTableWidgetItem *dispTOPItem = new QTableWidgetItem;
@@ -344,7 +344,7 @@ void StatisticsManager::printAutoMode(QTableWidget *tableDevices, QTableWidget *
   QTableWidgetItem *procCountItem = new QTableWidgetItem;
   procCountItem->setText(QString::number(proCount));
   QTableWidgetItem *rejProbItem = new QTableWidgetItem;
-  rejProbItem->setText(QString::number(double(rejCount) / double (genCount)));
+  rejProbItem->setText(QString::number(double(rejCount) / double (genCount) * 100) + "%");
   QTableWidgetItem *dispTOWItem = new QTableWidgetItem;
   dispTOWItem->setText(QString::number(dispTOW));
   QTableWidgetItem *dispTOPItem = new QTableWidgetItem;
