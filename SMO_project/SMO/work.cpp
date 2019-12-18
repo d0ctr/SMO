@@ -20,7 +20,6 @@ std::vector<Application> generateApplicationsVector(const int &srcNum, const int
   srand(time(NULL));
   std::vector<Application> newAppVector;
   int appCount = 0;
-  int s = 0;
   double newTime = 0.;
   while(appCount < appNum)
   {
@@ -56,7 +55,24 @@ void startSmo(const int &srcNum, const int &bufSize, const int &devNum, const do
     progressDialog->setLabelText("Simulation in progress...\nApplications left: " + QString::number(appNum - stats.getRejectedCount() - stats.getProcessedCount()));
     if(appIterator != applications.end())
     {
-      systemTime = buffer.tryToAddApplicationPtr(&*appIterator);
+        systemTime = appIterator->getGenTime();
+        devices.releaseApplicationsByTime(systemTime);
+        while(!buffer.isEmpty())
+        {
+          Application *expectedApplicationPtr = buffer.getExpectedApplicationPtr();
+          Device *expectedDevicePtr = devices.getExpectedDevice(systemTime);
+          if(expectedDevicePtr != nullptr)
+          {
+            buffer.popThisApplicationPtr(expectedApplicationPtr);
+            devices.setApplicationPtr(expectedDevicePtr, expectedApplicationPtr);
+            stats.updateRecord(applications, systemTime);
+          }
+          else
+          {
+            break;
+          }
+      }
+      buffer.tryToAddApplicationPtr(&*appIterator);
       appIterator++;
       stats.updateRecord(applications, systemTime);
     }

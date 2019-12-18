@@ -70,3 +70,13 @@ double Device::getReleaseTime()
 {
   return tRelease;
 }
+void Device::releaseByTime(double &systemTime)
+{
+  if(!isEmpty())
+  {
+    if(tRelease <= systemTime)
+    {
+      popApplicationPtr();
+    }
+  }
+}

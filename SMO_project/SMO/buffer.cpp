@@ -8,18 +8,17 @@ Buffer::Buffer(const int &bufSize)
   sourcePackage = -1;
   this->bufSize = bufSize;
 }
-double Buffer::tryToAddApplicationPtr(Application *appPtr)
+void Buffer::tryToAddApplicationPtr(Application *appPtr)
 {
   for(auto&& bc : bufferVector)
   {
     if(bc.isEmpty())
     {
       bc.setApplication(appPtr);
-      return appPtr->getGenTime();
+      return;
     }
   }
   appPtr->setState(REJECTED);
-  return appPtr->getGenTime();
 }
 bool Buffer::isEmpty()
 {

@@ -12,7 +12,7 @@ DeviceManager::DeviceManager(const int &devNum, const int &a, const int &b)
 }
 bool DeviceManager::isEmpty()
 {
-  for(auto &&d : devVector)
+  for(auto &d : devVector)
   {
     if(!d.isEmpty())
     {
@@ -20,6 +20,14 @@ bool DeviceManager::isEmpty()
     }
   }
   return true;
+}
+
+void DeviceManager::releaseApplicationsByTime(double &systemTime)
+{
+  for(auto &d : devVector)
+  {
+    d.releaseByTime(systemTime);
+  }
 }
 
 Device *DeviceManager::getExpectedDevice(double systemTime)

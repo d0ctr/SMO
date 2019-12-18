@@ -22,6 +22,7 @@ public:
   int getAppCount();
   double getTimeCount();
   double getReleaseTime();
+  void releaseByTime(double &systemTime);
 private:
   int index;
   double tProcessing;

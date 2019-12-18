@@ -11,7 +11,7 @@ public:
   ~Buffer() = default;
   Buffer(const int &bufSize);
   std::vector<BufferCell> *getBufferVector();
-  double tryToAddApplicationPtr(Application *appPtr);
+  void tryToAddApplicationPtr(Application *appPtr);
   bool isEmpty();
   void refactorBuffer();
   BufferCell *getExpectedApplicationBufferCellPtr();
