@@ -161,7 +161,7 @@ void StatisticsManager::updateStepMode(int recordNum, QTableWidget *tableSources
   for(int i = 0; size_t(i) < realDevices.size(); i++)
   {
     QString str = "<" + QString::number(realDevices[size_t(i)].getSrcNum() + 1) + ", " + QString::number(realDevices[size_t(i)].getIndex() + 1) +
-        "> will exit in: " + QString::number(realDevices[size_t(i)].getReleaseTime());
+        "> will exit at: " + QString::number(realDevices[size_t(i)].getReleaseTime());
     QTableWidgetItem *cellItem = new QTableWidgetItem;
     cellItem->setText(str);
     tableDevices->setItem(realDevices[size_t(i)].getDeviceIndex(), 0, cellItem);
@@ -171,7 +171,7 @@ void StatisticsManager::updateStepMode(int recordNum, QTableWidget *tableSources
   {
     if(a.getState() == PREGEN)
     {
-      QString str = "New app in: " + QString::number(a.getGenTime());
+      QString str = "New app at: " + QString::number(a.getGenTime());
       QTableWidgetItem *cellItem = new QTableWidgetItem;
       cellItem->setText(str);
       tableSources->setItem(a.getSrcNum(), 0, cellItem);
@@ -191,7 +191,8 @@ void StatisticsManager::updateStepMode(int recordNum, QTableWidget *tableSources
   tableProcesed->setRowCount(realProcessedCount);
   for(int i = 0; i < realProcessedCount; i++)
   {
-    QString str = "<" + QString::number(realProcessedVector[size_t(i)].getSrcNum() + 1) + ", " + QString::number(realProcessedVector[size_t(i)].getIndex() + 1) + ">";
+    QString str = "<" + QString::number(realProcessedVector[size_t(i)].getSrcNum() + 1) + ", "
+        + QString::number(realProcessedVector[size_t(i)].getIndex() + 1) + "> released at: " + QString::number(realProcessedVector[size_t(i)].getReleaseTime());
     QTableWidgetItem *cellItem = new QTableWidgetItem;
     cellItem->setText(str);
     tableProcesed->setItem(i, 0, cellItem);

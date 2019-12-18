@@ -13,6 +13,7 @@ public:
   bool isEmpty();
   Device *getExpectedDevice(double systemTime);
   std::vector<Device> *getDeviceVector();
+  void releaseApplicationsByTime(double &systemime);
   void releaseAllApplications();
   void setApplicationPtr(Device *devicePtr, Application *appPtr);
   void printDeviceState();
