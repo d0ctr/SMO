@@ -30,7 +30,11 @@ std::vector<Application> generateApplicationsVector(const int &srcNum, const int
     appCount++;
     std::cout << newTime << std::endl;
   }
-
+  std::sort(newAppVector.begin(), newAppVector.end(),
+            [](Application &app1, Application &app2) -> bool
+  {
+    return app1.getGenTime() < app2.getGenTime();
+  });
   return newAppVector;
 }
 
