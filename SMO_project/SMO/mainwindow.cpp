@@ -31,9 +31,10 @@ void MainWindow::on_buttonStart_clicked()
     int devNum = devNumStr.toInt();
     int appNum = appNumStr.toInt();
     double l = lStr.toDouble();
-    int a = aStr.toInt();
-    int b = bStr.toInt();
+    double a = aStr.toDouble();
+    double b = bStr.toDouble();
     QProgressDialog *progressDialog = new QProgressDialog("Simulation in progress...", "&Cancel", 0, appNum);
+    smoStats.~StatisticsManager();
     smoStats = StatisticsManager(appNum, devNum, bufSize, srcNum, progressDialog, ui->tableWidgetSources, ui->tableWidgetBuffer,
                                                    ui->tableWidgetDevices, ui->tableWidgetRejected, ui->tableWidgetProcessed);
     QWidget::setEnabled(0);

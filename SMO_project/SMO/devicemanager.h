@@ -9,7 +9,7 @@ class DeviceManager
 public:
   DeviceManager() = default;
   ~DeviceManager() = default;
-  DeviceManager(const int &devNum, const int &a, const int &b);
+  DeviceManager(const int &devNum, const double &a, const double &b);
   bool isEmpty();
   Device *getExpectedDevice(double systemTime);
   std::vector<Device> *getDeviceVector();

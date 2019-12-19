@@ -1,6 +1,6 @@
 #include "device.h"
 
-Device::Device(const int &index, const int &a, const int &b)
+Device::Device(const int &index, const double &a, const double &b)
 {
   appPtr = nullptr;
   this->index = index;

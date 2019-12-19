@@ -1,6 +1,6 @@
 #include "devicemanager.h"
 
-DeviceManager::DeviceManager(const int &devNum, const int &a, const int &b)
+DeviceManager::DeviceManager(const int &devNum, const double &a, const double &b)
 {
   this->devNum = devNum;
   for(int i = 0; i < devNum; i++)

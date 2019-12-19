@@ -11,7 +11,7 @@ class Device
 public:
   Device() = default;
   ~Device() = default;
-  Device(const int &index, const int &a, const int &b);
+  Device(const int &index, const double &a, const double &b);
   void setApplicationPtr(Application *appPtr);
   bool isEmpty();
   void genProcessingTime();
@@ -31,7 +31,7 @@ private:
   double timeCount;
   Application *appPtr;
   bool empty;
-  int a, b;
+  double a, b;
 };
 
 #endif // DEVICE_H

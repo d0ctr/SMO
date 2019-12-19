@@ -8,6 +8,6 @@
 #include "statisticsmanager.h"
 
 std::vector<Application> generateApplicationsVector(const int &srcNum, const int &appNum, const double &l);
-void startSmo(const int &srcNum, const int &bufSize, const int &devNum, const double &l, const int &a, const int &b, const int &appNum,
+void startSmo(const int &srcNum, const int &bufSize, const int &devNum, const double &l, const double &a, const double &b, const int &appNum,
               StatisticsManager &stats, QProgressDialog *progressDialog);
 #endif // WORK_H

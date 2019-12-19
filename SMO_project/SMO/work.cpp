@@ -34,7 +34,7 @@ std::vector<Application> generateApplicationsVector(const int &srcNum, const int
   return newAppVector;
 }
 
-void startSmo(const int &srcNum, const int &bufSize, const int &devNum, const double &l, const int &a, const int &b, const int &appNum,
+void startSmo(const int &srcNum, const int &bufSize, const int &devNum, const double &l, const double &a, const double &b, const int &appNum,
               StatisticsManager &stats, QProgressDialog *progressDialog)
 {
   std::vector<Application> applications = generateApplicationsVector(srcNum, appNum, l);
